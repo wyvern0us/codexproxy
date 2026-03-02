@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-    <!-- Codex Version 3.5 -->
+    <title>‎</title> <!-- Invisible Title -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -321,7 +319,6 @@
             repoUrl: 'https://raw.githubusercontent.com/wyvern0us/codexproxy/refs/heads/main/index.html',
             
             init: function() {
-                // Populate Backup Dropdown
                 const select = document.getElementById('backup-select');
                 let foundBackups = false;
                 for (let i = 0; i < localStorage.length; i++) {
@@ -336,8 +333,7 @@
                 }
                 if (!foundBackups) select.innerHTML = '<option>No backups found</option>';
 
-                // Check Auto Update
-                const autoUpdate = localStorage.getItem('autoUpdate') !== 'false'; // Default to true
+                const autoUpdate = localStorage.getItem('autoUpdate') !== 'false';
                 document.getElementById('auto-update-toggle').checked = autoUpdate;
                 
                 if (autoUpdate) {
@@ -353,16 +349,13 @@
             createBackup: function() {
                 const timestamp = new Date().toLocaleString();
                 const key = `codex_backup_${timestamp}`;
-                // Limit to 3 backups to save space
                 let backups = [];
                 for(let k in localStorage) if(k.startsWith('codex_backup_')) backups.push(k);
                 if (backups.length >= 3) {
-                    backups.sort(); // Remove oldest
+                    backups.sort();
                     localStorage.removeItem(backups[0]);
                 }
-                
                 localStorage.setItem(key, document.documentElement.outerHTML);
-                console.log('Backup created:', key);
             },
 
             restoreSelected: function() {
@@ -370,32 +363,21 @@
                 if (!key || !localStorage.getItem(key)) return alert("Select a valid backup.");
                 if (confirm("Revert to this version? This page will reload.")) {
                     const html = localStorage.getItem(key);
-                    document.open();
-                    document.write(html);
-                    document.close();
+                    document.open(); document.write(html); document.close();
                 }
             },
 
             checkForUpdate: async function() {
-                console.log('Checking for updates...');
                 try {
                     const response = await fetch(this.repoUrl);
                     if (!response.ok) return;
                     const newHtml = await response.text();
                     
-                    // Simple check: different content + contains specific marker
                     if (newHtml.length > 0 && newHtml !== document.documentElement.outerHTML) {
-                        console.log('Update found. Applying...');
                         this.createBackup();
-                        document.open();
-                        document.write(newHtml);
-                        document.close();
-                    } else {
-                        console.log('System up to date.');
+                        document.open(); document.write(newHtml); document.close();
                     }
-                } catch (e) {
-                    console.error('Update check failed', e);
-                }
+                } catch (e) { console.error('Update check failed'); }
             }
         };
 
@@ -420,7 +402,6 @@
         window.onload = () => {
             VersionManager.init();
             document.getElementById('screen-cloak-toggle').checked = sys.screenCloak;
-            // document.getElementById('auto-ab-toggle').checked = sys.autoAB; 
         };
 
         // --- UNLOCK / ERROR PAGE LOGIC ---
